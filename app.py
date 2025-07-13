@@ -60,6 +60,30 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('dashboard.html')
 
+@app.route('/bookstore')
+def bookstore():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    return render_template('bookstore.html')
+
+@app.route('/upload')
+def upload():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    return render_template('upload.html')
+
+@app.route('/progress')
+def progress():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    return render_template('progress.html')
+
+@app.route('/track_book')
+def track_book():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    return render_template('track_book.html')
+
 @app.route('/logout')
 def logout():
     session.pop('email', None)
