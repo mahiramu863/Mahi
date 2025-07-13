@@ -1,0 +1,17 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<h1>Generated MCQs</h1>
+<ul>
+    {% for mcq in mcqs %}
+    <li>
+        <p><strong>{{ mcq.question }}</strong></p>
+        <ul>
+            {% for option in mcq.options %}
+            <li>{{ option }}</li>
+            {% endfor %}
+        </ul>
+        <p><em>Answer: {{ mcq.answer }}</em></p>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

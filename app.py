@@ -6,9 +6,11 @@ from email.mime.multipart import MIMEMultipart
 import random
 import string
 import time
+import PyPDF2
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 # In-memory user storage (for demonstration purposes)
 users = {}
@@ -66,10 +68,35 @@ def bookstore():
         return redirect(url_for('login'))
     return render_template('bookstore.html')
 
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if 'email' not in session:
         return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        if 'book' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+
+        file = request.files['book']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if file:
+            filename = file.filename
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+
+            text = ""
+            with open(filepath, 'rb') as f:
+                reader = PyPDF2.PdfReader(f)
+                for page in reader.pages:
+                    text += page.extract_text()
+
+            return redirect(url_for('book_view', filename=filename))
+
     return render_template('upload.html')
 
 @app.route('/progress')
@@ -83,6 +110,48 @@ def track_book():
     if 'email' not in session:
         return redirect(url_for('login'))
     return render_template('track_book.html')
+
+@app.route('/book_view/<filename>')
+def book_view(filename):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    text = ""
+    with open(filepath, 'rb') as f:
+        reader = PyPDF2.PdfReader(f)
+        for page in reader.pages:
+            text += page.extract_text()
+
+    return render_template('book_view.html', book_text=text, filename=filename)
+
+@app.route('/generate_mcqs/<filename>', methods=['POST'])
+def generate_mcqs(filename):
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    text = ""
+    with open(filepath, 'rb') as f:
+        reader = PyPDF2.PdfReader(f)
+        for page in reader.pages:
+            text += page.extract_text()
+
+    # Mock AI service
+    mcqs = [
+        {
+            "question": "This is a sample question 1?",
+            "options": ["A", "B", "C", "D"],
+            "answer": "A"
+        },
+        {
+            "question": "This is a sample question 2?",
+            "options": ["A", "B", "C", "D"],
+            "answer": "B"
+        }
+    ]
+
+    return render_template('mcqs.html', mcqs=mcqs)
 
 @app.route('/logout')
 def logout():

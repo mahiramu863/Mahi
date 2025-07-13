@@ -1,0 +1,44 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<style>
+    .book-view-container {
+        display: flex;
+        height: 80vh;
+    }
+    .book-viewer {
+        flex: 1;
+        border: 1px solid #ccc;
+        overflow-y: scroll;
+        padding: 1rem;
+    }
+    .mcq-generator {
+        flex: 1;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    .generate-mcq-btn {
+        background-color: #1877f2;
+        color: #fff;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        align-self: center;
+    }
+</style>
+<div class="book-view-container">
+    <div class="book-viewer">
+        <pre>{{ book_text }}</pre>
+    </div>
+    <div class="mcq-generator">
+        <form action="{{ url_for('generate_mcqs', filename=filename) }}" method="post">
+            <button type="submit" class="generate-mcq-btn">Generate MCQs</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

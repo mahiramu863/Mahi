@@ -1,5 +1,8 @@
 {% extends "dashboard.html" %}
 {% block content %}
-<h1>Upload</h1>
-<p>This section is under construction.</p>
+<h1>Upload a Book</h1>
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="book" accept=".pdf" required>
+    <input type="submit" value="Upload">
+</form>
 {% endblock %}
